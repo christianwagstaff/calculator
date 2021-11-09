@@ -1,0 +1,99 @@
+:root {
+    --calculator-padding: 12px;
+}
+
+.calculator {
+    background-color: lightgrey;
+    width: 500px;
+    height: 750px;
+    display: flex;
+    flex-direction: column;
+    padding: 32px;
+    gap: 28px;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.digits {
+    display: flex;
+    flex-direction: row-reverse;
+
+    flex-wrap: wrap;
+    gap: var(--calculator-padding);
+    justify-content: flex-start;
+}
+
+.operators {
+    display: flex;
+    flex-direction: column;
+    gap: var(--calculator-padding);
+}
+
+.bottom {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    gap: var(--calculator-padding);
+}
+
+.screen {
+    height: 30%;
+    background-color: grey;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    font-size: 100px;
+    padding-right: 32px;
+}
+
+.extras {
+    display: flex;
+    gap: var(--calculator-padding);
+    justify-content: flex-end;
+}
+
+.circle {
+    border-radius: 50%;
+    height: 115px;
+    width: 115px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 50px;
+}
+
+.left {
+    display: flex;
+    flex-direction: column;
+    gap: var(--calculator-padding);
+}
+
+.operators .circle {
+    background-color: orange;
+    color: white;
+    font-weight: 600;
+}
+
+.extras .circle {
+    background-color: lightyellow;
+}
+
+.digits .circle {
+    color: white;
+    background-color: grey;
+}
+
+.circle:hover {
+    filter:brightness(120%);
+}
+
+.rounded {
+    border-radius: 15px;
+}
