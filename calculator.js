@@ -21,8 +21,4 @@ function operate(operator, num1, num2) {
     return operatorToCall(num1, num2);
 }
 
-console.log(operate('+', 1, 2))
-console.log(operate('-', 1, 2))
-console.log(operate('*', 1, 2))
-console.log(operate('/', 1, 2))
-console.log(operate('/', 1, 0))
+//to get users number multiply the current number by 10 then add their selected digit
