@@ -20,6 +20,7 @@ function operate(operator, num1, num2) {
     } else {
         operatorToCall = add;
     }
+    console.log(operatorToCall)
     let val =  operatorToCall(num1, num2);
     return val;
 }
@@ -42,24 +43,42 @@ equalBtn.addEventListener('click', runCalcuation);
 
 let screenNumber = 0;
 let previousNumber = 0;
+let currentNumber = 0;
 let currentOperator = '';
-let screenClear = 'no';
-const SCREENSIZE = 1000000;
+const SCREENSIZE = 100;
 
 function updateDisplayScreen(screenNumber) {
     display.textContent = Math.round(screenNumber * SCREENSIZE) / SCREENSIZE;
 }
 updateDisplayScreen(screenNumber);
 
+//set currentNumber as screenNumber, if there is a previousNumber and operator, run the calculation
+//set that number as the previousNumber and screenNumber and reset currentNumber and operator
+function startCalculation(e) {
+    let userOperator = e.target.id;
+    if (currentOperator === '') {
+        previousNumber = screenNumber;
+        screenNumber = 0;
+        currentOperator = userOperator;
+    } else {
+        currentNumber = screenNumber;
+        result = operate(currentOperator, previousNumber, currentNumber);
+        currentOperator = userOperator;
+        previousNumber = result;
+        screenNumber = 0;
+        currentNumber = 0;
+        updateDisplayScreen(previousNumber);
+    }
+}
+
 
 //to get users number multiply the current number by 10 then add their selected digit
 function addNumber(e) {
     clearBtn.textContent = 'C'
     let userSelection = e.target.textContent;
-    if (screenClear === 'yes') {
-        screenNumber = 0;
-        screenClear = 'no';
-    };
+
+    // TODO for decimals, check how many places behind 0 and multiply the user selection by 0.x1
+
     if (screenNumber < 0) {
         screenNumber =  screenNumber * 10 - parseInt(userSelection);
     } else {
@@ -73,14 +92,17 @@ function clearDisplay() {
     clearBtn.textContent = "AC"
     screenNumber = 0;
     previousNumber = 0;
+    currentNumber = 0;
     currentOperator = '';
-    screenClear = 'no';
     operators.forEach(e => e.classList.remove('current'))
     updateDisplayScreen(screenNumber);
 }
 
 //backspace the display one space
 function backspaceDisplay() {
+
+    // TODO for decimals, multiply by 10 
+
     if (screenNumber < 0) {
         screenNumber = Math.ceil(screenNumber / 10);
     } else {
@@ -95,29 +117,11 @@ function changeSign() {
     updateDisplayScreen(screenNumber);
 }
 
-//set screenNumber as userNumber1, resetDisplay
-function startCalculation(e) {
-    if (currentOperator === '') {
-        let userOperator = e.target.id;
-        currentOperator = userOperator;
-        previousNumber = screenNumber;
-        screenClear = 'yes';
-        updateDisplayScreen(screenNumber);
-    } else {
-        operators.forEach(e1 => e1.classList.remove('current'));
-        screenClear = 'yes';
-        userOperator = e.target.id;
-        previousNumber = operate(userOperator, previousNumber, screenNumber);
-        screenNumber = previousNumber;
-        updateDisplayScreen(screenNumber);
-    }
-    e.target.classList.add('current');
-}
-
 function runCalcuation() {
-    screenNumber = operate(currentOperator, previousNumber, screenNumber)
-    previousNumber = 0;
+    let result = operate(currentOperator, previousNumber, screenNumber)
+    previousNumber = result;
+    currentNumber = 0
+    screenNumber = 0;
     currentOperator = '';
-    screenClear = 'yes';
-    updateDisplayScreen(screenNumber);
+    updateDisplayScreen(result);
 }
