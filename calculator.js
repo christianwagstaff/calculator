@@ -75,6 +75,7 @@ function clearDisplay() {
     previousNumber = 0;
     currentOperator = '';
     screenClear = 'no';
+    operators.forEach(e => e.classList.remove('current'))
     updateDisplayScreen(screenNumber);
 }
 
@@ -103,12 +104,14 @@ function startCalculation(e) {
         screenClear = 'yes';
         updateDisplayScreen(screenNumber);
     } else {
+        operators.forEach(e1 => e1.classList.remove('current'));
         screenClear = 'yes';
         userOperator = e.target.id;
         previousNumber = operate(userOperator, previousNumber, screenNumber);
         screenNumber = previousNumber;
         updateDisplayScreen(screenNumber);
     }
+    e.target.classList.add('current');
 }
 
 function runCalcuation() {

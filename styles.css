@@ -82,6 +82,10 @@ body {
     font-weight: 600;
 }
 
+.operators .circle.current {
+    background-color: darkorange;
+}
+
 .extras .circle {
     background-color: lightyellow;
 }
