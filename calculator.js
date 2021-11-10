@@ -43,6 +43,7 @@ equalBtn.addEventListener('click', runCalcuation);
 let screenNumber = 0;
 let previousNumber = 0;
 let currentOperator = '';
+let screenClear = 'no';
 const SCREENSIZE = 1000000;
 
 function updateDisplayScreen(screenNumber) {
@@ -55,6 +56,10 @@ updateDisplayScreen(screenNumber);
 function addNumber(e) {
     clearBtn.textContent = 'C'
     let userSelection = e.target.textContent;
+    if (screenClear === 'yes') {
+        screenNumber = 0;
+        screenClear = 'no';
+    };
     if (screenNumber < 0) {
         screenNumber =  screenNumber * 10 - parseInt(userSelection);
     } else {
@@ -67,9 +72,9 @@ function addNumber(e) {
 function clearDisplay() {
     clearBtn.textContent = "AC"
     screenNumber = 0;
-    previousNumber
- = 0;
+    previousNumber = 0;
     currentOperator = '';
+    screenClear = 'no';
     updateDisplayScreen(screenNumber);
 }
 
@@ -93,21 +98,15 @@ function changeSign() {
 function startCalculation(e) {
     if (currentOperator === '') {
         let userOperator = e.target.id;
-        console.log(userOperator)
         currentOperator = userOperator;
-        previousNumber
-     = screenNumber;
-        console.log('initialize');
-        screenNumber = 0;
+        previousNumber = screenNumber;
+        screenClear = 'yes';
         updateDisplayScreen(screenNumber);
     } else {
+        screenClear = 'yes';
         userOperator = e.target.id;
-        previousNumber
-     = operate(userOperator, previousNumber
-        , screenNumber);
-        screenNumber = previousNumber
-    ;
-        console.log('second number');
+        previousNumber = operate(userOperator, previousNumber, screenNumber);
+        screenNumber = previousNumber;
         updateDisplayScreen(screenNumber);
     }
 }
@@ -116,5 +115,6 @@ function runCalcuation() {
     screenNumber = operate(currentOperator, previousNumber, screenNumber)
     previousNumber = 0;
     currentOperator = '';
+    screenClear = 'yes';
     updateDisplayScreen(screenNumber);
 }
