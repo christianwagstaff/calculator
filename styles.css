@@ -1,6 +1,6 @@
 :root {
     --calculator-padding: 12px;
-}
+} 
 
 .calculator {
     background-color: lightgrey;
@@ -43,7 +43,7 @@ body {
     gap: var(--calculator-padding);
 }
 
-.screen {
+#screen {
     height: 30%;
     background-color: grey;
     display: flex;
