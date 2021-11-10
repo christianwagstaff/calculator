@@ -3,7 +3,7 @@ function multiply(a,b) {return a * b};
 function add(a,b) {return a + b;}
 function subtract(a,b) {return a - b;}
 function divide(a,b) {
-    if (b === 0) return 'ERROR! World Ending!'
+    if (b === 0) return 'ERROR!'
     return a / b;
 } 
 
@@ -18,11 +18,9 @@ function operate(operator, num1, num2) {
     } else if (operator === 'divide') {
         operatorToCall = divide;
     } else {
-        operatorToCall = add;
+        return 'Nothing Selected';
     }
-    console.log(operatorToCall)
-    let val =  operatorToCall(num1, num2);
-    return val;
+    return operatorToCall(num1, num2);
 }
 
 const display = document.getElementById('screen');
@@ -46,15 +44,27 @@ let previousNumber = 0;
 let currentNumber = 0;
 let currentOperator = '';
 let ranResults = 'no';
-const SCREENSIZE = 100;
+const SCREENSIZE = 100000000;
 
 function updateDisplayScreen(screenNumber) {
+    if (typeof(screenNumber) !== 'number') {
+        display.textContent = screenNumber;
+        return;
+    }
+    if (screenNumber > SCREENSIZE) {
+        //TODO update fontsize, to shrink number and allow more digits instead of erroring
+        clearDisplay();
+        display.textContent = "OVERFLOW";
+        return;
+    }
     display.textContent = Math.round(screenNumber * SCREENSIZE) / SCREENSIZE;
 }
 updateDisplayScreen(screenNumber);
 
 //set currentNumber as screenNumber, if there is a previousNumber and operator, run the calculation
 //set that number as the previousNumber and screenNumber and reset currentNumber and operator
+
+//to change to allow keyboard input, change find userOperator to another funciton that will pick either keyboard or event.id then send those results though this function
 function startCalculation(e) {
     let userOperator = e.target.id;
     if (currentOperator === '' && ranResults === 'no') {
@@ -72,6 +82,8 @@ function startCalculation(e) {
         currentNumber = 0;
         updateDisplayScreen(previousNumber);
     }
+    operators.forEach(e1 => e1.classList.remove('current'));
+    e.target.classList.add('current');
 }
 
 
@@ -96,14 +108,16 @@ function clearDisplay() {
     screenNumber = 0;
     previousNumber = 0;
     currentNumber = 0;
-    currentOperator = '';
     ranResults = 'no';
-    operators.forEach(e => e.classList.remove('current'))
+    clearOperators();
     updateDisplayScreen(screenNumber);
 }
 
 //backspace the display one space
 function backspaceDisplay() {
+    if (display.textContent !== 0 && screenNumber === 0) {
+        screenNumber = display.textContent
+    }
 
     // TODO for decimals, multiply by 10 
 
@@ -117,16 +131,30 @@ function backspaceDisplay() {
 
 //convert the number from negative to positive
 function changeSign() {
+    if (display.textContent !== 0 && screenNumber === 0) {
+        screenNumber = display.textContent
+        ranResults = 'no';
+    }
     screenNumber = 0 - screenNumber;
     updateDisplayScreen(screenNumber);
 }
 
 function runCalcuation() {
+    if (currentOperator === '') return; //if user clicked enter without selecting an operand, do nothing
     let result = operate(currentOperator, previousNumber, screenNumber)
+    if (typeof result !== 'number') {
+        updateDisplayScreen(result)
+        return;
+    }
     previousNumber = result;
     currentNumber = 0
     screenNumber = 0;
-    currentOperator = '';
     ranResults = 'yes';
     updateDisplayScreen(result);
+    clearOperators();
+}
+
+function clearOperators() {
+    currentOperator = '';
+    operators.forEach(e1 => e1.classList.remove('current'));
 }

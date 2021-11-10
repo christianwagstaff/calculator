@@ -82,7 +82,7 @@ body {
 }
 
 .operators .circle.current {
-    background-color: darkorange;
+    background-color: orangered;
 }
 
 .extras .circle {
