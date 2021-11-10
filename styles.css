@@ -111,7 +111,6 @@ body {
     -o-user-select: none;
 } 
 
-img {
-    height: auto;
-    width: 70px;
+svg {
+    pointer-events: none;
 }
