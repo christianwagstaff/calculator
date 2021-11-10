@@ -23,7 +23,6 @@ body {
 .digits {
     display: flex;
     flex-direction: row-reverse;
-
     flex-wrap: wrap;
     gap: var(--calculator-padding);
     justify-content: flex-start;

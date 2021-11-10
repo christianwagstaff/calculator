@@ -26,7 +26,7 @@ function operate(operator, num1, num2) {
 }
 
 const display = document.getElementById('screen');
-const digits = document.querySelectorAll('.digits');
+const digits = document.querySelectorAll('.digit');
 const clearBtn = document.getElementById('clear');
 const backspaceBtn = document.getElementById('backspace');
 const changeSignBtn = document.getElementById('changeSign');
@@ -45,6 +45,7 @@ let screenNumber = 0;
 let previousNumber = 0;
 let currentNumber = 0;
 let currentOperator = '';
+let ranResults = 'no';
 const SCREENSIZE = 100;
 
 function updateDisplayScreen(screenNumber) {
@@ -56,9 +57,11 @@ updateDisplayScreen(screenNumber);
 //set that number as the previousNumber and screenNumber and reset currentNumber and operator
 function startCalculation(e) {
     let userOperator = e.target.id;
-    if (currentOperator === '') {
+    if (currentOperator === '' && ranResults === 'no') {
         previousNumber = screenNumber;
         screenNumber = 0;
+        currentOperator = userOperator;
+    } else if (currentOperator === '') {
         currentOperator = userOperator;
     } else {
         currentNumber = screenNumber;
@@ -94,6 +97,7 @@ function clearDisplay() {
     previousNumber = 0;
     currentNumber = 0;
     currentOperator = '';
+    ranResults = 'no';
     operators.forEach(e => e.classList.remove('current'))
     updateDisplayScreen(screenNumber);
 }
@@ -123,5 +127,6 @@ function runCalcuation() {
     currentNumber = 0
     screenNumber = 0;
     currentOperator = '';
+    ranResults = 'yes';
     updateDisplayScreen(result);
 }
