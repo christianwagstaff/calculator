@@ -50,7 +50,7 @@ body {
     align-items: center;
     justify-content: flex-end;
     font-size: 100px;
-    padding-right: 32px;
+    padding-right: 12px;
 }
 
 .extras {
@@ -67,6 +67,9 @@ body {
     align-items: center;
     justify-content: center;
     font-size: 50px;
+    transition: 0.1s linear all;
+    -webkit-transform: translate3d(0,0,0);
+    transform: translate3d(0,0,0);
 }
 
 .left {
@@ -96,6 +99,7 @@ body {
 
 .circle:hover {
     filter:brightness(120%);
+    transition: none;
 }
 
 .rounded {
@@ -116,4 +120,10 @@ body {
 
 svg {
     pointer-events: none;
+}
+
+body.preload {
+    animation-duration: 0s !important;
+    -webkit-animation-duration: 0s !important;
+    transition:background-color 0s, opacity 0s, color 0s, width 0s, height 0s, padding 0s, margin 0s !important;
 }

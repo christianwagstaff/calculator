@@ -30,6 +30,7 @@ const backspaceBtn = document.getElementById('backspace');
 const changeSignBtn = document.getElementById('changeSign');
 const equalBtn = document.getElementById('equals');
 const operators = document.querySelectorAll('.operator');
+const decimalBtn = document.getElementById('.');
 
 digits.forEach(e => e.addEventListener('click', addNumber));
 operators.forEach( e => e.addEventListener('click', startCalculation));
@@ -38,13 +39,17 @@ clearBtn.addEventListener('click', clearDisplay);
 backspaceBtn.addEventListener('click', backspaceDisplay);
 changeSignBtn.addEventListener('click', changeSign);
 equalBtn.addEventListener('click', runCalcuation);
+decimalBtn.addEventListener('click', startDecimal);
 
+//initalize variables
 let screenNumber = 0;
 let previousNumber = 0;
 let currentNumber = 0;
 let currentOperator = '';
 let ranResults = 'no';
-const SCREENSIZE = 100000000;
+let allowBackspace = true; //let user backspace their inputs, but not results
+let changingOperator = true; //allows user to change operator before pressing a number
+const SCREENSIZE = 10000000;
 
 function updateDisplayScreen(screenNumber) {
     if (typeof(screenNumber) !== 'number') {
@@ -71,7 +76,7 @@ function startCalculation(e) {
         previousNumber = screenNumber;
         screenNumber = 0;
         currentOperator = userOperator;
-    } else if (currentOperator === '') {
+    } else if (currentOperator === '' || changingOperator) {
         currentOperator = userOperator;
     } else {
         currentNumber = screenNumber;
@@ -80,10 +85,13 @@ function startCalculation(e) {
         previousNumber = result;
         screenNumber = 0;
         currentNumber = 0;
+        ranResults = 'yes';
         updateDisplayScreen(previousNumber);
     }
     operators.forEach(e1 => e1.classList.remove('current'));
     e.target.classList.add('current');
+    changingOperator = true;
+    allowBackspace = false;
 }
 
 
@@ -91,6 +99,8 @@ function startCalculation(e) {
 function addNumber(e) {
     clearBtn.textContent = 'C'
     let userSelection = e.target.textContent;
+    changingOperator = false;
+    allowBackspace = true;
 
     // TODO for decimals, check how many places behind 0 and multiply the user selection by 0.x1
 
@@ -104,17 +114,26 @@ function addNumber(e) {
 
 //clear the display
 function clearDisplay() {
-    clearBtn.textContent = "AC"
-    screenNumber = 0;
-    previousNumber = 0;
-    currentNumber = 0;
-    ranResults = 'no';
-    clearOperators();
-    updateDisplayScreen(screenNumber);
+    if (clearBtn.textContent === 'C') {
+        screenNumber = 0;
+        updateDisplayScreen(screenNumber);
+        clearBtn.textContent = 'AC';
+    } else {
+        clearBtn.textContent = "AC"
+        screenNumber = 0;
+        previousNumber = 0;
+        currentNumber = 0;
+        ranResults = 'no';
+        changingOperator = true;
+        allowBackspace = true;
+        clearOperators();
+        updateDisplayScreen(screenNumber);
+    }
 }
 
 //backspace the display one space
 function backspaceDisplay() {
+    if (!allowBackspace) return;
     if (display.textContent !== 0 && screenNumber === 0) {
         screenNumber = display.textContent
     }
@@ -131,8 +150,12 @@ function backspaceDisplay() {
 
 //convert the number from negative to positive
 function changeSign() {
-    if (display.textContent !== 0 && screenNumber === 0) {
-        screenNumber = display.textContent
+    if (ranResults === 'yes') {
+        screenNumber = 0;
+        updateDisplayScreen(screenNumber);
+    }
+    if (!screenNumberEqualsDisplay()) {
+        screenNumber = display.textContent;
         ranResults = 'no';
     }
     screenNumber = 0 - screenNumber;
@@ -152,9 +175,24 @@ function runCalcuation() {
     ranResults = 'yes';
     updateDisplayScreen(result);
     clearOperators();
+    changingOperator = true;
+    allowBackspace = false;
 }
 
 function clearOperators() {
     currentOperator = '';
     operators.forEach(e1 => e1.classList.remove('current'));
+}
+
+function startDecimal() {
+    //if just calculated, reset calculator and start with 0.xxx
+    //else add in decial to current screen number
+}
+
+function checkIfDecimal(screenNumber) {
+    
+}
+
+function screenNumberEqualsDisplay() {
+    return display.textContent === screenNumber
 }
