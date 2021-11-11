@@ -39,16 +39,18 @@ clearBtn.addEventListener('click', clearDisplay);
 backspaceBtn.addEventListener('click', backspaceDisplay);
 changeSignBtn.addEventListener('click', changeSign);
 equalBtn.addEventListener('click', runCalcuation);
-decimalBtn.addEventListener('click', startDecimal);
+decimalBtn.addEventListener('click', addDecimal);
 
 //initalize variables
 let screenNumber = 0;
 let previousNumber = 0;
 let currentNumber = 0;
 let currentOperator = '';
-let ranResults = 'no';
+let ranResults = false; //checks if the equal sign was used
+let allowSignChange = true; //let users change the sign from positive to negative
 let allowBackspace = true; //let user backspace their inputs, but not results
 let changingOperator = true; //allows user to change operator before pressing a number
+let waitingForDecimal = false; //waits for next digit to add decimal
 const SCREENSIZE = 10000000;
 
 function updateDisplayScreen(screenNumber) {
@@ -62,6 +64,7 @@ function updateDisplayScreen(screenNumber) {
         display.textContent = "OVERFLOW";
         return;
     }
+    screenNumber = roundAccurately(screenNumber);
     display.textContent = Math.round(screenNumber * SCREENSIZE) / SCREENSIZE;
 }
 updateDisplayScreen(screenNumber);
@@ -72,7 +75,7 @@ updateDisplayScreen(screenNumber);
 //to change to allow keyboard input, change find userOperator to another funciton that will pick either keyboard or event.id then send those results though this function
 function startCalculation(e) {
     let userOperator = e.target.id;
-    if (currentOperator === '' && ranResults === 'no') {
+    if (currentOperator === '' && !ranResults) {
         previousNumber = screenNumber;
         screenNumber = 0;
         currentOperator = userOperator;
@@ -85,13 +88,15 @@ function startCalculation(e) {
         previousNumber = result;
         screenNumber = 0;
         currentNumber = 0;
-        ranResults = 'yes';
+        ranResults = true;
         updateDisplayScreen(previousNumber);
     }
     operators.forEach(e1 => e1.classList.remove('current'));
     e.target.classList.add('current');
     changingOperator = true;
     allowBackspace = false;
+    allowSignChange = false;
+    waitingForDecimal = false;
 }
 
 
@@ -101,9 +106,19 @@ function addNumber(e) {
     let userSelection = e.target.textContent;
     changingOperator = false;
     allowBackspace = true;
+    allowSignChange = true;
 
     // TODO for decimals, check how many places behind 0 and multiply the user selection by 0.x1
-
+    if (waitingForDecimal) {
+        let screenNumberString = screenNumber.toString();
+        if (!screenNumberString.includes('.')) {
+            screenNumberString += '.';
+        }
+        screenNumberString += userSelection.toString();
+        screenNumber = parseFloat(screenNumberString);
+        updateDisplayScreen(screenNumber);
+        return;
+    }
     if (screenNumber < 0) {
         screenNumber =  screenNumber * 10 - parseInt(userSelection);
     } else {
@@ -115,20 +130,18 @@ function addNumber(e) {
 //clear the display
 function clearDisplay() {
     if (clearBtn.textContent === 'C') {
-        screenNumber = 0;
-        updateDisplayScreen(screenNumber);
         clearBtn.textContent = 'AC';
     } else {
-        clearBtn.textContent = "AC"
-        screenNumber = 0;
         previousNumber = 0;
         currentNumber = 0;
-        ranResults = 'no';
+        ranResults = false;
         changingOperator = true;
         allowBackspace = true;
-        clearOperators();
-        updateDisplayScreen(screenNumber);
+        clearOperators();   
     }
+    screenNumber = 0;
+    updateDisplayScreen(screenNumber);
+    waitingForDecimal = false;
 }
 
 //backspace the display one space
@@ -138,8 +151,14 @@ function backspaceDisplay() {
         screenNumber = display.textContent
     }
 
-    // TODO for decimals, multiply by 10 
-
+    // if its a decimal, convert to string, take off the last char and convert back to decimal
+    if (waitingForDecimal) {
+        let screenNumberString = screenNumber.toString();
+        screenNumberString = screenNumberString.substr(0, screenNumberString.length - 1);
+        screenNumber = parseFloat(screenNumberString);
+        updateDisplayScreen(screenNumber);
+        return;
+    }
     if (screenNumber < 0) {
         screenNumber = Math.ceil(screenNumber / 10);
     } else {
@@ -150,13 +169,10 @@ function backspaceDisplay() {
 
 //convert the number from negative to positive
 function changeSign() {
-    if (ranResults === 'yes') {
-        screenNumber = 0;
-        updateDisplayScreen(screenNumber);
-    }
+    if (!allowSignChange) return; //can't change sign if flag is turned off
     if (!screenNumberEqualsDisplay()) {
         screenNumber = display.textContent;
-        ranResults = 'no';
+        ranResults = false;
     }
     screenNumber = 0 - screenNumber;
     updateDisplayScreen(screenNumber);
@@ -172,11 +188,13 @@ function runCalcuation() {
     previousNumber = result;
     currentNumber = 0
     screenNumber = 0;
-    ranResults = 'yes';
+    ranResults = true;
     updateDisplayScreen(result);
     clearOperators();
     changingOperator = true;
     allowBackspace = false;
+    allowSignChange = true;
+    waitingForDecimal = false;
 }
 
 function clearOperators() {
@@ -184,15 +202,26 @@ function clearOperators() {
     operators.forEach(e1 => e1.classList.remove('current'));
 }
 
-function startDecimal() {
+function addDecimal() {
     //if just calculated, reset calculator and start with 0.xxx
     //else add in decial to current screen number
+    if (ranResults) {
+        clearDisplay();
+    } 
+    waitingForDecimal = true;
+    console.log('waiting for decimal');
 }
 
 function checkIfDecimal(screenNumber) {
-    
+    let wholeNumber = Math.floor(screenNumber);
+    let remainder = screenNumber - wholeNumber;
+    return remainder !== 0;
 }
 
 function screenNumberEqualsDisplay() {
     return display.textContent === screenNumber
+}
+
+function roundAccurately(num) {
+    return parseFloat(Math.round(num + 'e' + 15) + 'e-' + 15);
 }
