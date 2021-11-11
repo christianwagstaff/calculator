@@ -127,3 +127,14 @@ body.preload {
     -webkit-animation-duration: 0s !important;
     transition:background-color 0s, opacity 0s, color 0s, width 0s, height 0s, padding 0s, margin 0s !important;
 }
+
+@media (max-width: 600px) {
+    .calculator {
+        width: 90%;
+    }
+
+    .circle {
+        width: 30%;
+        height: 30%;
+    }
+}
